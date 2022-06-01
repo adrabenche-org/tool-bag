@@ -1,0 +1,3 @@
+[submodule "yacc-builder"]
+	path = yacc-builder
+	url = https://github.com/adrabenche-org/yacc-builder.git
