@@ -1,3 +1,6 @@
 [submodule "yacc-builder"]
 	path = yacc-builder
 	url = https://github.com/adrabenche-org/yacc-builder.git
+[submodule "ogmios"]
+	path = ogmios
+	url = https://github.com/CardanoSolutions/ogmios.git
