@@ -1,0 +1,8 @@
+cardano_node_version: 1.34.0
+
+cardano_node_config_files:
+  - testnet-config.json
+  - testnet-shelley-genesis.json
+  - testnet-byron-genesis.json
+  - testnet-alonzo-genesis.json
+  - testnet-topology.json

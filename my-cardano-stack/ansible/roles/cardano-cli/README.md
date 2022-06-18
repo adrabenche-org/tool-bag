@@ -1,0 +1,1 @@
+ansible-playbook -u ubuntu -i hosts_inventory --extra-vars "hosts_list=hosts" playbook.yml
