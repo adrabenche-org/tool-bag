@@ -1,7 +1,5 @@
 ---
 - hosts: '{{ hosts_list }}'
-  tasks:
-  - debug: msg="** Host is {{ ansible_fqdn }}"
 
   - name: Create directories
     ansible.builtin.file:

@@ -1,0 +1,46 @@
+---
+- name: Install packages
+  ansible.builtin.apt:
+    autoclean: yes
+    update_cache: true
+    name: "{{ cardano_node_initial_apps }}"
+
+- name: Create {{ operator_user_group }}
+  ansible.builtin.group:
+    name: "{{ operator_user_group }}"
+    state: present
+    gid: "{{ operator_user_id }}"
+
+- name: Add the {{ operator_user_name }} user
+  ansible.builtin.user:
+    name: "{{ operator_user_name }}"
+    comment: "{{ operator_user_comment }}"
+    uid: "{{ operator_user_id }}"
+    group: "{{ operator_user_id }}"
+    shell: "/bin/bash"
+
+- name: Create {{ operator_user_name }} .ssh folder
+  ansible.builtin.file:
+    path: "{{ operator_home }}/.ssh"
+    state: directory
+    owner: "{{ operator_user_id }}"
+    group: "{{ operator_user_id }}"
+    mode: 0700
+
+- name: Add {{ operator_user_name }} to sudoers with no password
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/{{ operator_user_name }}
+    content: |
+             {{ operator_user_name }}  ALL=(ALL)  NOPASSWD:ALL
+
+- name: Add {{ operator_user_name }} SSH keys
+  ansible.builtin.copy:
+    src: authorized_keys
+    dest: "{{ operator_home }}/.ssh/authorized_keys"
+    mode: "0600"
+
+- name: "Add {{ operator_user_name }} to docker group"
+  ansible.builtin.user:
+    name: "{{ operator_user_name }}"
+    groups: docker
+    append: yes
