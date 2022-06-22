@@ -1,5 +1,6 @@
 ---
-- name: Prepare node for installation
+- name: Deploy a full stack
   hosts: cardano-nodes
   roles:
     - setup-server
+    - cardano-node

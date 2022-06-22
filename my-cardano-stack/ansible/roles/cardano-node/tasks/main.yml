@@ -1,55 +1,66 @@
 ---
-- hosts: '{{ hosts_list }}'
 
-  - name: Create directories
-    ansible.builtin.file:
-      path: "{{ item }}"
-      state: directory
-      owner: {{ working_id }}
-      group: {{ working_id }}
-    with_items:
-      - "{{ working_directory }}"
-      - "{{ working_directory }}/relay/conf_files/testnet"
-      - "{{ working_directory }}/cardanodb"
-      - "{{ working_directory }}/keysandaddresses"
+- name: Create a ext4 filesystem on {{ cardano_node_db_fs }}
+  filesystem:
+    fstype: ext4
+    dev: "{{ cardano_node_db_fs }}"
 
-  - name: Download config files
-    ansible.builtin.get_url:
-      url: "https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1/{{ item }}"
-      dest: "{{ working_directory }}/relay/conf_files/testnet/{{item}}"
-      owner: {{ working_id }}
-      group: {{ working_id }}
-    with_items: {{ cardano_node_config_files }}
-      
-  - name: Update cache
-    ansible.builtin.apt:
-      update_cache: yes
-  
-  - name: Install docker
-    ansible.builtin.apt:
-      update_cache: yes
-  
-  - name: Create network
-    ansible.builtin.docker_network:
-      name: tx-network
-  
-  - name: Start node
-    ansible.builtin.docker_container:
-      image: inputoutput/cardano-node:{{ cardano_node_version }}
-      name: cardano-node
-      hostname: cardano-node
-      container_default_behavior: no_defaults
-      networks:
-        - name: "tx-network"
-      volumes:
-        - {{ working_directory }}/cardanodb:/var/lib/cardanodb
-        - {{ working_directory }}/relay/conf_files/testnet:/etc/cardano-node:ro
-        - {{ working_directory }}/keysandaddresses:/var/lib/keysandaddresses:ro
-      ports:
-        - "3001:3001"
-      command: run --topology /etc/cardano-node/testnet-topology.json \
-                --database-path /var/lib/cardanodb \
-                --socket-path /var/lib/cardanodb/node.socket \
-                --host-addr 0.0.0.0\
-                --port 3001 \
-                --config /etc/cardano-node/testnet-config.json
+- name: Mount {{ cardano_node_db_fs }} in {{ operator_home }}/{{ cardano_node_deploy_folder }}
+  ansible.posix.mount:
+    src: "{{ cardano_node_db_fs }}"
+    path: "{{ operator_home }}/{{ cardano_node_deploy_folder }}"
+    fstype: ext4
+    opts: "gid={{ operator_user_id }},uid={{ operator_user_id }}"
+    state: mounted
+
+- name: Create cardano-node directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ operator_user_name }}"
+    group: "{{ operator_user_name }}"
+  with_items:
+    - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/relay/conf_files/testnet"
+    - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/cardanodb"
+
+- name: Download config files
+  ansible.builtin.get_url:
+    url: "{{ cardano_node_config_url }}/{{ item }}"
+    dest: "{{ operator_home }}/{{ cardano_node_deploy_folder }}/relay/conf_files/testnet/{{item}}"
+    owner: "{{ operator_user_name }}"
+    group: "{{ operator_user_group }}"
+  with_items: "{{ cardano_node_config_files }}"
+
+- name: Create network
+  ansible.builtin.docker_network:
+    name: "{{ docker_network }}"
+
+- name: Start node
+  ansible.builtin.docker_container:
+    image: inputoutput/cardano-node:{{ cardano_node_version }}
+    name: cardano-node
+    hostname: cardano-node
+    container_default_behavior: no_defaults
+    networks:
+      - name: "{{ docker_network }}"
+    volumes:
+      - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/cardanodb:/var/lib/cardanodb"
+      - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/relay/conf_files/testnet:/etc/cardano-node:ro"
+      - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/keysandaddresses:/var/lib/keysandaddresses:ro"
+    ports:
+      - "3001:3001"
+    command: run --topology /etc/cardano-node/testnet-topology.json \
+              --database-path /var/lib/cardanodb \
+              --socket-path /var/lib/cardanodb/node.socket \
+              --host-addr 0.0.0.0\
+              --port 3001 \
+              --config /etc/cardano-node/testnet-config.json
+
+- name: Copy {{ operator_home }}/{{ cardano_node_deploy_folder }}/keysandaddresses if possible
+  block:
+  - name: Check if folder exist 
+    ansible.builtin.stat module:
+      path: "{{ operator_home }}/{{ cardano_node_deploy_folder }}/keysandaddresses"
+    register: keysandaddresses
+    
+
