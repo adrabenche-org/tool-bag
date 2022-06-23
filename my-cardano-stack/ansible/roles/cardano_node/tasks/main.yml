@@ -1,24 +1,26 @@
 ---
+- name: Setup an extra filesystem for cardanodb
+  when: setup_fs_for_cardanodb == true
+  block:
+  - name: Create a ext4 filesystem on {{ cardano_node_db_fs }}
+    filesystem:
+      fstype: ext4
+      dev: "{{ cardano_node_db_fs }}"
 
-- name: Create a ext4 filesystem on {{ cardano_node_db_fs }}
-  filesystem:
-    fstype: ext4
-    dev: "{{ cardano_node_db_fs }}"
-
-- name: Mount {{ cardano_node_db_fs }} in {{ operator_home }}/{{ cardano_node_deploy_folder }}
-  ansible.posix.mount:
-    src: "{{ cardano_node_db_fs }}"
-    path: "{{ operator_home }}/{{ cardano_node_deploy_folder }}"
-    fstype: ext4
-    opts: "gid={{ operator_user_id }},uid={{ operator_user_id }}"
-    state: mounted
+  - name: Mount {{ cardano_node_db_fs }} in {{ operator_home }}/{{ cardano_node_deploy_folder }}
+    ansible.posix.mount:
+      src: "{{ cardano_node_db_fs }}"
+      path: "{{ operator_home }}/{{ cardano_node_deploy_folder }}"
+      fstype: ext4
+      opts: "gid={{ operator_user_id }},uid={{ operator_user_id }}"
+      state: mounted
 
 - name: Create cardano-node directories
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: "{{ operator_user_name }}"
-    group: "{{ operator_user_name }}"
+    group: "{{ operator_user_group }}"
   with_items:
     - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/relay/conf_files/testnet"
     - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/cardanodb"
@@ -31,9 +33,25 @@
     group: "{{ operator_user_group }}"
   with_items: "{{ cardano_node_config_files }}"
 
-- name: Create network
+- name: Create docker network {{ docker_network }}
   ansible.builtin.docker_network:
     name: "{{ docker_network }}"
+
+- name: Check if {{ operator_home }}/{{ cardano_node_deploy_folder }}/keysandaddresses exists
+  ansible.builtin.stat:
+    path: "{{ operator_home }}/{{ cardano_node_deploy_folder }}/keysandaddresses"
+  register: keysandaddresses
+    
+- name: Copy key material 
+  when: keysandaddresses.stat.exists == false
+  block:
+    - name: Copy folder
+      ansible.builtin.copy:
+        src: "keysandaddresses"
+        dest: "{{ operator_home }}/{{ cardano_node_deploy_folder }}"
+        owner: "{{ operator_user_id }}"
+        group: "{{ operator_user_group }}"
+        mode: '0600'
 
 - name: Start node
   ansible.builtin.docker_container:
@@ -55,12 +73,3 @@
               --host-addr 0.0.0.0\
               --port 3001 \
               --config /etc/cardano-node/testnet-config.json
-
-- name: Copy {{ operator_home }}/{{ cardano_node_deploy_folder }}/keysandaddresses if possible
-  block:
-  - name: Check if folder exist 
-    ansible.builtin.stat module:
-      path: "{{ operator_home }}/{{ cardano_node_deploy_folder }}/keysandaddresses"
-    register: keysandaddresses
-    
-

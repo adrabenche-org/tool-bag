@@ -1,0 +1,4 @@
+image_build: false
+cardano_cli_image_repo: adrabenche/cardano-cli
+cardano_cli_image_tag: 1.34.0.0
+cardano_cli_git_repo: "https://github.com/adrabenche-org/yacc-builder.git"

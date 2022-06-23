@@ -2,4 +2,4 @@
 - name: Prepare node for installation
   hosts: cardano-nodes
   roles:
-    - setup-server
+    - setup_server

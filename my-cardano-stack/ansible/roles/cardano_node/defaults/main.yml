@@ -11,3 +11,4 @@ cardano_node_config_url: "https://hydra.iohk.io/job/Cardano/cardano-node/cardano
 docker_network: "tx-network"
 cardano_node_db_fs: "/dev/sda"
 network_mode: "default"
+setup_fs_for_cardanodb: false

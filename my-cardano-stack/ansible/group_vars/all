@@ -1,6 +1,6 @@
-ansible_ssh_user: root
-operator_home: /home/operator
-operator_user_name: operator
+ansible_ssh_user: "root"
+operator_home: "/home/operator"
+operator_user_name: "operator"
 operator_user_comment: "Cardano node operator user"
 operator_user_id: "1000"
-ansible_ssh_common_args: -o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no
+ansible_ssh_common_args: "-o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no"

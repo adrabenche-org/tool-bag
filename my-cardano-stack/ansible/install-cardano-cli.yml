@@ -2,4 +2,4 @@
 - name: Setup node for the cardano-node installation
   hosts: cardano-nodes
   roles:
-    - cardano_node
+    - cardano_cli
