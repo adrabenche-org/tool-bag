@@ -4,6 +4,7 @@
     autoclean: yes
     update_cache: true
     name: "{{ cardano_node_initial_apps }}"
+  become: yes
 
 - name: Create {{ operator_user_group }}
   ansible.builtin.group:
