@@ -1,5 +1,5 @@
 # What 
-Here you will find ansible scripts to deploy the following apps on a **standalon linux box**. With box we mean, depending on which cloud provider will use a different name (i.e Droplet, Instance, etc...)
+Here you will find ansible scripts to deploy the following apps on a **standalon linux box** setting up **a user named operato**. With box we mean, depending on which cloud provider will use a different name (i.e Droplet, Instance, etc...)
 
 ## Apps
 
@@ -27,8 +27,8 @@ A deep dive on the content of each folder.
 ```
 group_vars:
     \_ all:
-        \_  ansible_ssh_user:
-        |_  operator_home:
+        \_  ansible_ssh_user: The user to authenticate against each box
+        |_  operator_home: 
         |_  operator_user_name:
         |_  operator_user_comment:
         |_  operator_user_id:
@@ -48,10 +48,26 @@ install-full-stack.yml: Install all the roles. Starting with setup of course.
 
 ## What to do first
 
-* First install the ansible modules executing the folowing command. This will be required for some roles:
+The following tasks are recommended (almost mandatory) to be performed before the installation of any app:
+
+### 1. First install the ansible modules 
+
+Executing the folowing command. This will be required for some roles:
 ```bash
 $ ansible-galaxy collection install -r ansible_collection.yml
 ```
 
-* Setup and configure the node. This **does not** install any app. This will configure a common ground to install the apps. Remeber, each app is attached to a role and each role has a folder under the [roles](./roles) folder.
+### 2. Setup and configure the node. 
 
+This **does not** install any app. This will configure a common ground to install the apps. Remeber, each app is attached to a role and each role has a folder under the [roles](./roles) folder.
+
+Append the IP address/es (FQDN, hostname make your pick) of the node/es inside the [inventory/hosts_inventory](./inventory/hosts_inventory) file.
+
+```bash
+$ vi inventory/hosts_inventory
+```
+```
+[cardano-nodes]
+111.222.223.xyz
+```
+Access and execute the setup step:
