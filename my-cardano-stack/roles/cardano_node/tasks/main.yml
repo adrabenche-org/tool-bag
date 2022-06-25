@@ -20,7 +20,7 @@
     path: "{{ item }}"
     state: directory
     owner: "{{ operator_user_name }}"
-    group: "{{ operator_user_group }}"
+    group: "{{ operator_user_name }}"
   with_items:
     - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/relay/conf_files/testnet"
     - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/cardanodb"
@@ -30,7 +30,7 @@
     url: "{{ cardano_node_config_url }}/{{ item }}"
     dest: "{{ operator_home }}/{{ cardano_node_deploy_folder }}/relay/conf_files/testnet/{{item}}"
     owner: "{{ operator_user_name }}"
-    group: "{{ operator_user_group }}"
+    group: "{{ operator_user_name }}"
   with_items: "{{ cardano_node_config_files }}"
 
 - name: Create docker network {{ docker_network }}
@@ -50,7 +50,7 @@
         src: "keysandaddresses"
         dest: "{{ operator_home }}/{{ cardano_node_deploy_folder }}"
         owner: "{{ operator_user_id }}"
-        group: "{{ operator_user_group }}"
+        group: "{{ operator_user_name }}"
         mode: '0600'
 
 - name: Start node

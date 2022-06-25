@@ -6,9 +6,9 @@
     name: "{{ cardano_node_initial_apps }}"
   become: yes
 
-- name: Create {{ operator_user_group }}
+- name: Create {{ operator_user_name }}
   ansible.builtin.group:
-    name: "{{ operator_user_group }}"
+    name: "{{ operator_user_name }}"
     state: present
     gid: "{{ operator_user_id }}"
 
@@ -39,7 +39,7 @@
     src: authorized_keys
     dest: "{{ operator_home }}/.ssh/authorized_keys"
     owner: "{{ operator_user_id }}"
-    group: "{{ operator_user_group }}"
+    group: "{{ operator_user_name }}"
     mode: "0600"
 
 - name: Add {{ operator_user_name }} to docker group

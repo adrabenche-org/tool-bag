@@ -8,7 +8,8 @@ So, use this if you don't want to fight against all the docs and long setups.
 |Folder|What it is|
 |---|---|
 |my-cardano-node|A `README.md ` file with a set if instructions to start a cardano node running inside a container|
-|yacc-builder| This stand for `Yet another cardano cli builder`. This is a quickly way to build a cardano-cli; but you can choose the version of the cardano-cli.
+|my-cardano-stack|A series of ansible script to deploy a cardano node with the ability to add/remove tools to help you work with. Each tool is a container.|
+|yacc-builder| This stand for `Yet another cardano cli builder`. This is a quickly way to build a cardano-cli; but you can choose the version of the cardano-cli.|
 
 ## Want to contribute?
 

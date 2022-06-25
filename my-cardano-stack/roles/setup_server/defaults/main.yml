@@ -1,4 +1,3 @@
-operator_user_group: operator
 cardano_node_initial_apps:
   - docker.io
   - net-tools
