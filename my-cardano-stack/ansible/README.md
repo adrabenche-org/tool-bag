@@ -19,10 +19,6 @@ Before start
 
 1) ssh access to the box, instance, droplet, etc you want to configure
 2) ansible installed. Access [this link](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) for documentation.
-3) Install the following ansible collections executing the folowing command:
-```bash
-$ ansible-galaxy collection install -r ansible_collection.yml
-```
 
 ## Files and folders
 
@@ -43,9 +39,19 @@ roles:
     \_  cardano_cli:
     |_  cardano_node:
     |_  setup_server:
-ansible_collection.yml:
-install-cardano-cli.yml:
-install-cardano-node.yml:
-setup-node.yml:
-install-full-stack.yml:
+ansible_collection.yml: ansible modules to install. New modules must be added here.
+install-cardano-cli.yml: cardano client role to install cardano-cli.
+install-cardano-node.yml: cardano node role to install a cardano node
+setup-node.yml: Setup a common ground inside the box. This means a mandatory setup to deploy the other roles.
+install-full-stack.yml: Install all the roles. Starting with setup of course.
 ```
+
+## What to do first
+
+* First install the ansible modules executing the folowing command. This will be required for some roles:
+```bash
+$ ansible-galaxy collection install -r ansible_collection.yml
+```
+
+* Setup and configure the node. This **does not** install any app. This will configure a common ground to install the apps. Remeber, each app is attached to a role and each role has a folder under the [roles](./roles) folder.
+
