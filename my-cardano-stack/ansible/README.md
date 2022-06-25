@@ -28,11 +28,11 @@ A deep dive on the content of each folder.
 group_vars:
     \_ all:
         \_  ansible_ssh_user: The user to authenticate against each box
-        |_  operator_home: 
-        |_  operator_user_name:
-        |_  operator_user_comment:
-        |_  operator_user_id:
-        |_  ansible_ssh_common_args:
+        |_  operator_home: home of the operator user
+        |_  operator_user_name: User name of the operator. Leave it as it is unless you know what you are doing
+        |_  operator_user_comment: Comment of the user. The "description" part inside the /etc/passwd file
+        |_  operator_user_id: UID of the user
+        |_  ansible_ssh_common_args: Arguments when performing the ssh connection against the box.
 inventory:
     \_ hosts_inventory:
 roles:
@@ -70,4 +70,10 @@ $ vi inventory/hosts_inventory
 [cardano-nodes]
 111.222.223.xyz
 ```
-Access and execute the setup step:
+Append or add your ssh key to the authorized key file:
+
+```bash
+$ ssh-add -L  > roles/setup_server/files/authorized_keys
+```
+And setup the node:
+```bash
