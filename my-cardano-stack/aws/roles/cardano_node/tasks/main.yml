@@ -6,14 +6,15 @@
     filesystem:
       fstype: ext4
       dev: "{{ cardano_node_db_fs }}"
+    become: yes
 
   - name: Mount {{ cardano_node_db_fs }} in {{ operator_home }}/{{ cardano_node_deploy_folder }}
     ansible.posix.mount:
       src: "{{ cardano_node_db_fs }}"
       path: "{{ operator_home }}/{{ cardano_node_deploy_folder }}"
       fstype: ext4
-      opts: "gid={{ operator_user_id }},uid={{ operator_user_id }}"
       state: mounted
+    become: yes
 
 - name: Create cardano-node directories
   ansible.builtin.file:
@@ -24,6 +25,7 @@
   with_items:
     - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/relay/conf_files/testnet"
     - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/cardanodb"
+  become: yes
 
 - name: Download config files
   ansible.builtin.get_url:
@@ -36,6 +38,7 @@
 - name: Create docker network {{ docker_network }}
   ansible.builtin.docker_network:
     name: "{{ docker_network }}"
+  become: yes
 
 - name: Check if {{ operator_home }}/{{ cardano_node_deploy_folder }}/keysandaddresses exists
   ansible.builtin.stat:
@@ -52,6 +55,7 @@
         owner: "{{ operator_user_id }}"
         group: "{{ operator_user_name }}"
         mode: '0600'
+  become: yes
 
 - name: Start node
   ansible.builtin.docker_container:
@@ -73,3 +77,4 @@
               --host-addr 0.0.0.0\
               --port 3001 \
               --config /etc/cardano-node/testnet-config.json
+  become: yes

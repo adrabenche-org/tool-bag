@@ -9,5 +9,5 @@ cardano_node_config_files:
 cardano_node_config_url: "https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1"
 docker_network: "tx-network"
 setup_fs_for_cardanodb: true
-cardano_node_db_fs: "/dev/sda"
+cardano_node_db_fs: "/dev/xvdf"
 network_mode: "default"
