@@ -1,0 +1,13 @@
+cardano_node_deploy_folder: deploy
+cardano_node_version: 1.34.0
+cardano_node_config_files:
+  - testnet-config.json
+  - testnet-shelley-genesis.json
+  - testnet-byron-genesis.json
+  - testnet-alonzo-genesis.json
+  - testnet-topology.json
+cardano_node_config_url: "https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1"
+docker_network: "tx-network"
+setup_fs_for_cardanodb: true
+cardano_node_db_fs: "/dev/sda"
+network_mode: "default"

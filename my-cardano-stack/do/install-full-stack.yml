@@ -1,0 +1,8 @@
+---
+- name: Deploy a full stack
+  hosts: cardano-nodes
+  roles:
+    - setup_server
+    - cardano_node
+    - cardano_cli
+

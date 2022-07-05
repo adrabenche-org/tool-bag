@@ -1,0 +1,4 @@
+cardano_node_initial_apps:
+  - docker.io
+  - net-tools
+  - python3-docker

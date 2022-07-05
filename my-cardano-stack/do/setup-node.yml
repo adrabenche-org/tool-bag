@@ -1,0 +1,5 @@
+---
+- name: Prepare node for installation
+  hosts: cardano-nodes
+  roles:
+    - setup_server

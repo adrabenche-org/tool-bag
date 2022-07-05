@@ -1,0 +1,29 @@
+---
+- name: Pull {{ cardano_cli_image_repo }}:{{ cardano_cli_image_tag }} image
+  when: image_build == false
+  community.docker.docker_image:
+    name: "{{ cardano_cli_image_repo }}:{{ cardano_cli_image_tag }}"
+    source: pull
+
+- name: Build {{ cardano_cli_image_repo }}:{{ cardano_cli_image_tag }} from source.
+  when: image_build == true
+  block:
+    - name: Print warning message
+      ansible.builtin.debug:
+        msg: Building of docker image {{ cardano_cli_image_repo }}:{{ cardano_cli_image_tag }} from cardano version {{ cardano_cli_image_tag.split(".")[:-1] | join('.') }} will take several time.
+      
+    - name: Clone cardano-cli:{{ cardano_cli_image_tag }}
+      ansible.builtin.git:
+        repo: "{{ cardano_cli_git_repo }}"
+        dest: "{{ operator_home }}/cardano-cli"
+        depth: 1
+        version: "{{ cardano_cli_image_tag }}"
+    
+    - name: Build image from version {{ cardano_cli_image_tag.split(".")[:-1] | join('.') }}
+      community.docker.docker_image:
+        name: cardano-cli:{{ cardano_cli_image_tag }}
+        build:
+          path: "{{ operator_home }}/cardano-cli"
+          args:
+            GIT_NODE_REV="{{ cardano_cli_image_tag.split(".")[:-1] | join('.') }}"
+        source: build

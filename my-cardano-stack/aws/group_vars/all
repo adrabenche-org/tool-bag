@@ -1,0 +1,5 @@
+ansible_ssh_user: "ubuntu"
+operator_home: "/home/ubuntu"
+operator_user_name: "ubuntu"
+operator_user_id: "1000"
+ansible_ssh_common_args: "-o ControlMaster=auto -o ControlPersist=60s -o StrictHostKeyChecking=no"

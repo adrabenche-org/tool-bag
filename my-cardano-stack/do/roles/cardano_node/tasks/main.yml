@@ -1,0 +1,75 @@
+---
+- name: Setup an extra filesystem for cardanodb
+  when: setup_fs_for_cardanodb == true
+  block:
+  - name: Create a ext4 filesystem on {{ cardano_node_db_fs }}
+    filesystem:
+      fstype: ext4
+      dev: "{{ cardano_node_db_fs }}"
+
+  - name: Mount {{ cardano_node_db_fs }} in {{ operator_home }}/{{ cardano_node_deploy_folder }}
+    ansible.posix.mount:
+      src: "{{ cardano_node_db_fs }}"
+      path: "{{ operator_home }}/{{ cardano_node_deploy_folder }}"
+      fstype: ext4
+      opts: "gid={{ operator_user_id }},uid={{ operator_user_id }}"
+      state: mounted
+
+- name: Create cardano-node directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ operator_user_name }}"
+    group: "{{ operator_user_name }}"
+  with_items:
+    - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/relay/conf_files/testnet"
+    - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/cardanodb"
+
+- name: Download config files
+  ansible.builtin.get_url:
+    url: "{{ cardano_node_config_url }}/{{ item }}"
+    dest: "{{ operator_home }}/{{ cardano_node_deploy_folder }}/relay/conf_files/testnet/{{item}}"
+    owner: "{{ operator_user_name }}"
+    group: "{{ operator_user_name }}"
+  with_items: "{{ cardano_node_config_files }}"
+
+- name: Create docker network {{ docker_network }}
+  ansible.builtin.docker_network:
+    name: "{{ docker_network }}"
+
+- name: Check if {{ operator_home }}/{{ cardano_node_deploy_folder }}/keysandaddresses exists
+  ansible.builtin.stat:
+    path: "{{ operator_home }}/{{ cardano_node_deploy_folder }}/keysandaddresses"
+  register: keysandaddresses
+    
+- name: Copy key material 
+  when: keysandaddresses.stat.exists == false
+  block:
+    - name: Copy folder
+      ansible.builtin.copy:
+        src: "keysandaddresses"
+        dest: "{{ operator_home }}/{{ cardano_node_deploy_folder }}"
+        owner: "{{ operator_user_id }}"
+        group: "{{ operator_user_name }}"
+        mode: '0600'
+
+- name: Start node
+  ansible.builtin.docker_container:
+    image: inputoutput/cardano-node:{{ cardano_node_version }}
+    name: cardano-node
+    hostname: cardano-node
+    container_default_behavior: no_defaults
+    networks:
+      - name: "{{ docker_network }}"
+    volumes:
+      - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/cardanodb:/var/lib/cardanodb"
+      - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/relay/conf_files/testnet:/etc/cardano-node:ro"
+      - "{{ operator_home }}/{{ cardano_node_deploy_folder }}/keysandaddresses:/var/lib/keysandaddresses:ro"
+    ports:
+      - "3001:3001"
+    command: run --topology /etc/cardano-node/testnet-topology.json \
+              --database-path /var/lib/cardanodb \
+              --socket-path /var/lib/cardanodb/node.socket \
+              --host-addr 0.0.0.0\
+              --port 3001 \
+              --config /etc/cardano-node/testnet-config.json

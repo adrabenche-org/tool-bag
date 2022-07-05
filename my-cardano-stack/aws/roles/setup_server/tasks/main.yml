@@ -1,0 +1,22 @@
+---
+- name: Install packages
+  ansible.builtin.apt:
+    autoclean: yes
+    update_cache: true
+    name: "{{ cardano_node_initial_apps }}"
+  become: yes
+
+- name: Add {{ operator_user_name }} SSH keys
+  ansible.builtin.copy:
+    src: authorized_keys
+    dest: "{{ operator_home }}/.ssh/authorized_keys"
+    owner: "{{ operator_user_id }}"
+    group: "{{ operator_user_name }}"
+    mode: "0600"
+
+- name: Add {{ operator_user_name }} to docker group
+  ansible.builtin.user:
+    name: "{{ operator_user_name }}"
+    groups: docker
+    append: yes
+  become: yes
