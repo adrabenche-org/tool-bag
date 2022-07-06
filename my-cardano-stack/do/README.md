@@ -1,12 +1,11 @@
 # What 
-Deploy on standalone Digital Ocean Droplet
+Deploy on standalone Digital Ocean Droplet, or any box with root access via ssh.
 
 If you want to save some time, the default setup will work on:
-* Digital Ocean cloud
+* Digital Ocean cloud or box with ssh access
 * A separate volume for the cardanodb
 * Add the ip addres inside the `./inventory/hosts_inventory`
 * Add the ssh keys inside `./roles/setup_server/files/authorized_keys`
-* Go to the last line.
 
 ## Deploy
 

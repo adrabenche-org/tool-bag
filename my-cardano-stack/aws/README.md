@@ -2,15 +2,14 @@
 Deploy on standalone EC2 instance
 
 If you want to save some time, the default setup will work on:
-* Digital Ocean cloud
-* A separate volume for the cardanodb
+* AWS cloud
+* A separate attached volume for the cardanodb
 * Add the ip addres inside the `./inventory/hosts_inventory`
 * Add the ssh keys inside `./roles/setup_server/files/authorized_keys`
-* Go to the last line.
 
 ## Deploy
 
-You must deploy the ansible playbboks on the following order. To know how to do it you must check on each role `README.md` file.
+You must deploy the ansible playbooks on the following order. To know how to do it you must check on each role `README.md` file.
 
 1. [setup_server](roles/setup_server/README.md)
 2. [cardano_node](roles/cardano_node/README.md)

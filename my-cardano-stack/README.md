@@ -17,7 +17,9 @@ Each app is implemented into a separate container providing the ability to decid
 
 Before start
 
-1) ssh access to the box, instance, droplet, etc you want to configure
+1) ssh access to the box, instance, droplet, etc you want to configure:
+    * As root for **Digital Ocean**
+    * As ubuntu fo **AWS**
 2) ansible installed. Access [this link](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) for documentation.
 
 ## How to deploy

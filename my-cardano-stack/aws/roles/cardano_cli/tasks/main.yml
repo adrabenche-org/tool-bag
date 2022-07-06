@@ -4,6 +4,7 @@
   community.docker.docker_image:
     name: "{{ cardano_cli_image_repo }}:{{ cardano_cli_image_tag }}"
     source: pull
+  become: yes
 
 - name: Build {{ cardano_cli_image_repo }}:{{ cardano_cli_image_tag }} from source.
   when: image_build == true
@@ -27,3 +28,4 @@
           args:
             GIT_NODE_REV="{{ cardano_cli_image_tag.split(".")[:-1] | join('.') }}"
         source: build
+      become: yes
